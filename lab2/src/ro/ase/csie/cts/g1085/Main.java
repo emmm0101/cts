@@ -1,6 +1,9 @@
 package ro.ase.csie.cts.g1085;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 // de refacut user
 // din user:
@@ -14,60 +17,80 @@ public class Main {
 
     public static void main(String[] args) {
         // write your code here
-        OShop o = new OShop("Emag", "logo.jpg", new ArrayList<Product>());
-
-        Product p1 = new Product("Laptop", 3200.5, 1,ProductCategory.valueOf("laptop"), 1123, 1);
-        Product p2 = new Product("Frigider", 207.95, 1,ProductCategory.valueOf("electrocasnice"), 1245, 2);
+        Product p1 = new Product("Laptop", 3200.5, 1,ProductCategory.valueOf("laptop"), 1123, "procesor Intel");
+        Product p2 = new Product("Frigider", 207.95, 1,ProductCategory.valueOf("electrocasnice"), 1245, "clasa A");
         Product p3 = new Product(p1);
+        p3.setName("Paine");
 
-        p3.setquantity(5);
-        p3.setProductName("Paine");
+        Map<Product, Integer> stock = new HashMap<Product, Integer>();
+        stock.put(p1,2);
+        stock.put(p3,3);
 
-        o.modifyProductsList(1,p1);
-        o.modifyProductsList(1,p2);
+        OnlineShop onlineShop = new OnlineShop("Emag", "logo.jpg", stock);
 
-        o.modifyProductsList(2, p1);
-        System.out.println(p1.equals(p2));
+        User user = new User("gigi", "1");
+        Map<Product, Integer> cart = new HashMap<Product, Integer>();
+        cart.put(p1,1);
+        cart.put(p3,2);
+        user.setCart(cart);
+
+        user.placeOrder(onlineShop, "Strada V Argesului");
+
+
     }
 }
 
-class OShop {
-    private String onlineShopName;
-    private String i;
-    private ArrayList<Product> Products;
+class OnlineShop {
+    private String shopName;
+    private String image;
+    private Map<Product, Integer> stock;
 
-    OShop(String name, String img, ArrayList<Product> Products)
+    OnlineShop(String shopName, String image, Map<Product, Integer> stock)
     {
-        this.Products = new ArrayList<Product>();
-        this.i = img;
-        this.onlineShopName = name;
-    }
-
-    public void modifyProductsList(int what, Product p)
-    {
-        if(what == 1)
-        {
-            this.Products.add(p);
+        this.stock = new HashMap<>();
+        for (Map.Entry<Product, Integer> mapEntry : stock.entrySet()) {
+            this.stock.put(mapEntry.getKey(), mapEntry.getValue());
         }
+        this.image = image;
+        this.shopName = shopName;
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public Map<Product, Integer> getStock() {
+        return stock;
+    }
+
+    public void setStock(Map<Product, Integer> stock) {
+        this.stock = new HashMap<Product, Integer>();
+        for (Map.Entry<Product, Integer> mapEntry : stock.entrySet()) {
+            this.stock.put(mapEntry.getKey(), mapEntry.getValue());
+        }
+    }
+
+    // modify stock
+    public void modifyStock(Product product, int quantity )
+    {
+        if(quantity > 0 )
+            this.stock.put(product, quantity);
         else
-            this.Products.remove(p);
+            this.stock.remove(product);
     }
 
-    public String getOnlineShopName() {
-        return onlineShopName;
-    }
-
-    public void setOnlineShopName(String onlineShopName) {
-        this.onlineShopName = onlineShopName;
-    }
-
-    public String getI() {
-        return i;
-    }
-
-    public void setImg(String img) {
-        this.i = img;
-    }
 }
 
 enum ProductCategory{
@@ -79,109 +102,93 @@ enum ProductCategory{
 class Product
 {
     private int id;
-    private String ProductName;
-    private double ProductPrice;
-    private int ProductType;
+    private String name;
+    private double price;
+    private int type;
     private ProductCategory productCategory;
-    private int quantity;
     private String details; // ex.: processor, memory, power, volume (for refrigerators etc)
 
-    public Product(String n, double p, int pt, ProductCategory pc, int id, int quantity)
+    public Product(String name, double price, int type, ProductCategory productCategory, int id, String details)
     {
         try{
-            if(n.length() < 5){
+            if(name.length() < 1){
                 throw new Exception();
             }else{
-                this.ProductName = n;
+                this.name = name;
             }
             if(id < 0){
                 throw new Exception();
             }else{
                 this.id = id;
             }
-            if(quantity > 0){
-                throw new Exception();
-            }else{
-                this.quantity = quantity;
-            }
+
         }catch(Exception e){
             System.out.println("Something went wrong.");
         }
-
-        this.ProductPrice = p;
-        this.ProductType = pt;
-        this.productCategory = pc;
+        this.details = details;
+        this.price = price;
+        this.type = type;
+        this.productCategory = productCategory;
     }
 
     public Product(Product p)
     {
-        new Product(p.ProductName,p.ProductPrice, p.ProductType, p.productCategory, p.id, p.quantity);
-        System.out.println("aaa");
+        this(p.getName(),p.getPrice(), p.getType(), p.getProductCategory(), p.getId(),p.getDetails() );
     }
 
-    public double getProductPrice() {
-        return ProductPrice;
+    public double getPrice() {
+        return price;
     }
 
-    public void setProductPrice(double ProductPrice) {
-        this.ProductPrice = ProductPrice;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
-    public String getProductName() {
-        return ProductName;
+    public String getName() {
+        return name;
     }
 
-    public void setProductName(String ProductName) {
-        this.ProductName = ProductName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public int getProductType() {
-        return ProductType;
+    public int getType() {
+        return type;
     }
 
-    public void setProductType(int ProductType) {
-        this.ProductType = ProductType;
+    public void setType(int ProductType) {
+        this.type = type;
+    }
+
+    public ProductCategory getProductCategory() {
+        return productCategory;
+    }
+
+    public void setProductCategory(ProductCategory productCategory) {
+        this.productCategory = productCategory;
     }
 
     public boolean equals(Product p)
     {
         if(p.id != this.id)
             return false;
-        if(!p.ProductName.equals(this.ProductName))
+        if(!p.name.equals(this.name))
             return false;
-        if(p.ProductPrice != this.ProductPrice)
+        if(p.price != this.price)
             return false;
-        if(p.ProductType != p.ProductType)
+        if(p.type != this.type)
             return false;
-        if(p.productCategory != this.productCategory)
+        if(p.productCategory != this.productCategory) // enum?
             return false;
-
         return true;
     }
 
-    // 2 metode: reducere + scumpire
-    public void modify(boolean flag, double val)
-    {
-        if(flag)
-            this.ProductPrice+=this.ProductPrice*val;
-        if(!flag)
-            this.ProductPrice-=this.ProductPrice*val/100;
-    }
-
     public void applyDiscount(double val){
-        this.ProductPrice-=this.ProductPrice*val/100;
+        this.price-=this.price*val/100;
     }
 
     public void raisePrice(double val){
-        this.ProductPrice+=this.ProductPrice*val/100;
-    }
-
-    public int getquantity() {
-        return quantity;
-    }
-
-    public void setquantity(int quantity) {
-        this.quantity = quantity;
+        this.price+=this.price*val/100;
     }
 
     public int getId() {
@@ -203,87 +210,144 @@ class Product
 
 class User
 {
-    private String usn;
-    private String userId;
-    private ArrayList<Order> o;
-    private ArrayList<Order> c;
+    private String username;
+    private String id;
+    private ArrayList<Order> ordersHistory;
+    private Map<Product, Integer> cart;
 
-    public User(String usn, String userId)
-    {
-        this.usn = usn;
-        this.userId = userId;
-        o=new ArrayList<Order>();
-        c=new ArrayList<Order>();
+    public String getUsername() {
+        return username;
     }
 
-    public void addO1(Order o)
-    {
-        this.o.add(o);
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public void addO2(Order o)
-    {
-        this.c.add(o);
+    public String getId() {
+        return id;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public ArrayList<Order> getOrdersHistory() {
+        return ordersHistory;
+    }
+
+    public void setOrdersHistory(ArrayList<Order> ordersHistory) {
+
+        this.ordersHistory = new ArrayList<Order>();
+        for(int i=0;i<ordersHistory.size();i++){
+            this.ordersHistory.add(ordersHistory.get(i));
+        }
+    }
+
+    public Map<Product, Integer> getCart() {
+        return cart;
+    }
+
+    public void setCart(Map<Product, Integer> cart) {
+        this.cart=new HashMap<Product, Integer>();
+        for (Map.Entry<Product, Integer> mapEntry : cart.entrySet()) {
+            this.cart.put(mapEntry.getKey(), mapEntry.getValue());
+        }
+    }
+
+    public User(String username, String userId)
+    {
+        this.username = username;
+        this.id = userId;
+        ordersHistory=new ArrayList<Order>();
+        cart=new HashMap<Product, Integer>();
+    }
+
+    public User(String username, String userId, Map<Product, Integer> cart)
+    {
+        this.username = username;
+        this.id = id;
+        cart=new HashMap<Product, Integer>();
+        for (Map.Entry<Product, Integer> mapEntry : cart.entrySet()) {
+            this.cart.put(mapEntry.getKey(), mapEntry.getValue());
+        }
+    }
+
+    public User(User user)
+    {
+        this(user.getUsername(),user.getId(), user.getCart());
+    }
+
+    public void addOrder(Order o)
+    {
+        this.ordersHistory.add(o);
+    }
+
+    public void addProductToCart(Product product, int quantity, OnlineShop onlineShop)
+    {
+        // vf q > 0 si q <= stoc
+        int stock = onlineShop.getStock().get(product);
+        if( quantity <= stock){
+            this.cart.put(product, quantity);
+        }else{
+            System.out.println("Not so many elements in stock");
+        }
+
+    }
+
+    public void removeProductFromCart(Product product, int quantity)
+    {
+        if(quantity > 0) {
+            this.cart.remove(product, quantity);
+        }
+    }
+
+    public void cleanCart(){
+        cart = new HashMap<Product, Integer>();
+    }
+
+    // iterare cart
+        // verificare stoc
+            // update stoc
+    public void placeOrder(OnlineShop onlineShop, String address){
+        Map<Product, Integer> stockShop = onlineShop.getStock();
+        for (Map.Entry<Product, Integer> mapEntry : this.cart.entrySet()) {
+            int productStock = stockShop.get(mapEntry.getKey());
+            stockShop.put(mapEntry.getKey(), productStock - mapEntry.getValue());
+        }
+        cleanCart();
+        Random random = new Random();
+        ordersHistory.add(new Order(random.nextInt(), address ));
+    }
+
 }
 
+// add cart map ?
 class Order
 {
-    private ArrayList<Product> l;
-    private String addr;
+    private int id;
+    private String address;
 
-    public Order()
-    {
-        l = new ArrayList<Product>();
-    }
-    public void add(Product p)
-    {
-        if(l.size() > 99)
-            return;
-
-        l.add(p);
+    public Order(int id, String address){
+        this.address = address;
     }
 
-    public void remove(Product p)
-    {
-        l.remove(p);
+    public int getId() {
+        return id;
     }
 
-    public String getAddr() {
-        return addr;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setAddr(String addr) {
-        this.addr = addr;
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
 
-class InventoryP
-{
-    private Product p;
-    private int q;
-
-    public InventoryP(Product p, int q)
-    {
-        this.p = new Product(p);
-        this.q = q;
-    }
-    public Product getP() {
-        return p;
-    }
-
-    public void setP(Product p) {
-        this.p = p;
-    }
-
-    public int getQ() {
-        return q;
-    }
-
-    public void setQ(int q) {
-        this.q = q;
-    }
-}
 
 
 
