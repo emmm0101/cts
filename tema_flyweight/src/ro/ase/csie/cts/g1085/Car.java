@@ -16,7 +16,7 @@ public class Car implements ICar {
 
     @Override
     public void carStatus() {
-        System.out.println("I am the" + " " + this.color + " " + "and I have the following hash code" + " " + this.hashCode());
+        System.out.println("I am the" + " " + this.color + " car " + "and I have the following hash code" + " " + this.hashCode());
         System.out.println("Also I m going this fast: " + this.speed + " km/h");
     }
 }
