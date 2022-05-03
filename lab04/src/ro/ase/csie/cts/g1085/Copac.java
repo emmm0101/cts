@@ -47,15 +47,18 @@ public class Copac implements Cloneable{
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        Object clone = null;
+        Copac clone = null;
 
         try {
-            clone = super.clone();
+            clone =(Copac) super.clone();
+            clone.coroana = this.coroana;
+            clone.culoareFrunze = this.culoareFrunze;
+            clone.inatlime = this.inatlime;
+            clone.xoy = (Pozitie) this.xoy.clone();
 
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
-
         return clone;
 
     }

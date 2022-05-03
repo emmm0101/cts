@@ -4,7 +4,6 @@ import java.util.List;
 
 public class Livada {
     List<Copac> copaci;
-
     public void planteaza(Copac copac){
 
     }

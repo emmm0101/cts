@@ -1,6 +1,6 @@
 package ro.ase.csie.cts.g1085;
 
-public class Pozitie {
+public class Pozitie implements Cloneable {
     int x;
     int y;
 
@@ -23,5 +23,13 @@ public class Pozitie {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Pozitie clone =(Pozitie)  super.clone();
+        clone.x = this.x;
+        clone.y = this.y;
+        return clone;
     }
 }
